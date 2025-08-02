@@ -1,0 +1,78 @@
+body {
+    background-image: url('images/sunrise.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+#auth-section, #post-section {
+    background: #f9fafb;
+    padding: 2rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+}
+
+#auth-form, #post-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+#auth-form label, #post-form label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+#auth-form input, #post-form input, #post-form textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+}
+
+#auth-form button, #post-form button {
+    background: #3b82f6;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    align-self: flex-end;
+}
+
+#auth-form button:hover, #post-form button:hover {
+    background: #2563eb;
+}
+
+.post {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #3b82f6;
+}
+
+.comment {
+    background: #f8fafc;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.comment-form {
+    display: flex;
+    gap: 0.5rem;
+}
+
+@media (max-width: 600px) {
+    .container { padding: 1rem; }
+    #auth-form button, #post-form button { align-self: stretch; }
+}
