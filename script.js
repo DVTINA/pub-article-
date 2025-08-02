@@ -72,11 +72,17 @@ document.getElementById('post-form').addEventListener('submit', async function(e
     const imageUrl = formData.get('image_url');
     const imageFile = formData.get('image');
 
-    let image = imageUrl;
+    let image = imageUrl || '';
     if (imageFile && imageFile.size > 0) {
-        const { data, error } = await supabase.storage.from('images').upload(`${Date.now()}_${imageFile.name}`, imageFile);
-        if (error) console.error('Erreur upload image:', error);
-        else image = `${supabaseUrl}/storage/v1/object/public/images/${data.path}`;
+        const { data, error } = await supabase.storage.from('images').upload(`${Date.now()}_${imageFile.name}`, imageFile, {
+            cacheControl: '3600',
+            upsert: false
+        });
+        if (error) {
+            console.error('Erreur upload image:', error.message);
+            return;
+        }
+        image = `${supabaseUrl}/storage/v1/object/public/images/${data.path}`;
     }
 
     const { error } = await supabase.from('posts').insert({
@@ -87,10 +93,11 @@ document.getElementById('post-form').addEventListener('submit', async function(e
         timestamp: Date.now(),
         author: userName
     });
-    if (error) console.error('Erreur sauvegarde post:', error);
+    if (error) console.error('Erreur sauvegarde post:', error.message);
     else {
         displayPosts();
         this.reset();
+        alert('Publication réussie !');
 
         // Envoyer à Web3Forms
         formData.append('author', userName);
@@ -100,7 +107,6 @@ document.getElementById('post-form').addEventListener('submit', async function(e
             .catch(error => console.error('Erreur Web3Forms:', error));
     }
 });
-
 // Gérer la soumission des commentaires
 function handleCommentSubmit(e) {
     e.preventDefault();
