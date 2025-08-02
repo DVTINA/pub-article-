@@ -1,11 +1,16 @@
 // Initialiser Supabase
+const supabaseUrl = 'https://dvtina.supabase.co'; // Ton URL Supabase
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2dGluYSIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzI1NjU0NTc0LCJleHAiOjIwNDEyMzA1NzR9.K6M3G2Q0KkT2q4jZxJ8t4e5r6Y7u8I9O0P1Q2R3S4T'; // Ta clé anon publique
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+// Authentification avec nom, téléphone et code secret
 const authForm = document.getElementById('auth-form');
 const authMessage = document.getElementById('auth-message');
 const postSection = document.getElementById('post-section');
-const validSecret = "moncode123"; // Assure-toi que c’est le code correct
+const validSecret = "moncode123"; // Remplace par ton code secret sécurisé
 
 authForm.addEventListener('submit', function(e) {
-    e.preventDefault(); // Empêche la soumission par défaut (GET/POST)
+    e.preventDefault();
     const name = document.getElementById('name').value.trim();
     const phone = document.getElementById('phone').value.trim();
     const secret = document.getElementById('secret').value.trim();
@@ -80,21 +85,24 @@ document.getElementById('post-form').addEventListener('submit', async function(e
         });
         if (error) {
             console.error('Erreur upload image:', error.message);
+            alert('Erreur lors du téléchargement de l\'image.');
             return;
         }
         image = `${supabaseUrl}/storage/v1/object/public/images/${data.path}`;
     }
 
-    const { error } = await supabase.from('posts').insert({
+    const { data, error } = await supabase.from('posts').insert({
         title,
         content,
         image,
         comments: [],
         timestamp: Date.now(),
         author: userName
-    });
-    if (error) console.error('Erreur sauvegarde post:', error.message);
-    else {
+    }).select();
+    if (error) {
+        console.error('Erreur sauvegarde post:', error.message);
+        alert('Erreur lors de la publication.');
+    } else {
         displayPosts();
         this.reset();
         alert('Publication réussie !');
@@ -107,6 +115,7 @@ document.getElementById('post-form').addEventListener('submit', async function(e
             .catch(error => console.error('Erreur Web3Forms:', error));
     }
 });
+
 // Gérer la soumission des commentaires
 function handleCommentSubmit(e) {
     e.preventDefault();
@@ -123,21 +132,24 @@ function handleCommentSubmit(e) {
     if (comment) {
         supabase.from('posts').update({
             comments: supabase.arrayAppend('comments', { text: `${userName}: ${comment}`, timestamp: Date.now() })
-        }).eq('id', postId).then(() => {
-            commentInput.value = '';
-            displayPosts();
+        }).eq('id', postId).then(({ error }) => {
+            if (error) console.error('Erreur commentaire:', error.message);
+            else {
+                commentInput.value = '';
+                displayPosts();
 
-            const formData = new FormData();
-            formData.append('access_key', '9eae8f19-3986-457e-991f-43c241c17b22');
-            formData.append('subject', 'Nouveau commentaire');
-            formData.append('post_id', postId);
-            formData.append('comment', comment);
-            formData.append('author', userName);
-            fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData })
-                .then(response => response.json())
-                .then(data => console.log('Commentaire envoyé:', data))
-                .catch(error => console.error('Erreur Web3Forms:', error));
-        }).catch(error => console.error('Erreur commentaire:', error));
+                const formData = new FormData();
+                formData.append('access_key', '9eae8f19-3986-457e-991f-43c241c17b22');
+                formData.append('subject', 'Nouveau commentaire');
+                formData.append('post_id', postId);
+                formData.append('comment', comment);
+                formData.append('author', userName);
+                fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData })
+                    .then(response => response.json())
+                    .then(data => console.log('Commentaire envoyé:', data))
+                    .catch(error => console.error('Erreur Web3Forms:', error));
+            }
+        });
     }
 }
 
