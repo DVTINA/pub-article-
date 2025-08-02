@@ -1,16 +1,11 @@
 // Initialiser Supabase
-const supabaseUrl = 'https://supabase.com/dashboard/project/vvynnacemlmlezoktmpq/settings/api-keys'; // Remplace par ton URL Supabase
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2eW5uYWNlbWxtbGV6b2t0bXBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQxNjAyMjksImV4cCI6MjA2OTczNjIyOX0.qnk7lKQx_HoB0b0NZ33lQnua0ppvQUT9U0r9Vd35UFc'; // Remplace par ta clé anon publique
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-
-// Authentification avec nom, téléphone et code secret
 const authForm = document.getElementById('auth-form');
 const authMessage = document.getElementById('auth-message');
 const postSection = document.getElementById('post-section');
-const validSecret = "0000"; // Remplace par ton code secret sécurisé
+const validSecret = "moncode123"; // Assure-toi que c’est le code correct
 
 authForm.addEventListener('submit', function(e) {
-    e.preventDefault();
+    e.preventDefault(); // Empêche la soumission par défaut (GET/POST)
     const name = document.getElementById('name').value.trim();
     const phone = document.getElementById('phone').value.trim();
     const secret = document.getElementById('secret').value.trim();
